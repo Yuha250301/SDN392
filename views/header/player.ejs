@@ -1,0 +1,40 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-info">
+    <div class="container">
+        <a class="navbar-brand" href="/"><img
+            src="https://www.citypng.com/public/uploads/preview/qatar-2022-fifa-world-cup-logo-hd-png-11649451618xooi1vfwgs.png"
+                alt="Navbar"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="/players">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/players">Players</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/nations">Nations</a>
+                </li>
+                <% if(user){ %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auth/account/edit">Edit profile</a>
+                    </li>
+                    <% if(checkAdmin){%>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/auth/account/listUser">Users</a>
+                        </li>
+                    <% }%>
+                    <% }%>
+            </ul>
+            <div class="action-button">
+                <% if(!user){ %>
+                    <a class="nav-link" href="/auth">Sign In</a>
+                    <% } else { %>
+                        <a class="nav-link" href="/auth/logout">Logout</a>
+                        <%} %>
+            </div>
+        </div>
+</nav>
