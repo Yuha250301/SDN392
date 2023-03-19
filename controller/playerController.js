@@ -106,8 +106,17 @@ class playerController {
     var token = req.cookies.accessToken;
     let search = req.query.search;
     let page = req.query.page;
+    let nationFilter = req.query.nationFilter;
+    let positionFilter = req.query.positionFilter;
+    if (!nationFilter) nationFilter ='';
+    if (!positionFilter) positionFilter ='';
     if (!search) search = '';
     if (!page) page = 1;
+    res.locals.nationFilter = nationFilter;
+    res.locals.positionFilter = positionFilter;
+    res.locals.positions = positionList;
+    let nations = []
+    Nation.find({}).then((rs) => {nations = rs}).catch();
     if (token) {
       var data = jwt.verify(req.cookies.accessToken, config.secretKey);
       if (data.user.isAdmin) {
@@ -116,8 +125,17 @@ class playerController {
               "$regex": `${search}`,
               "$options": "i"
             }
-          }).populate('nation', 'image'), Nation.find({})])
-          .then((value) => {
+          }).populate('nation', 'image name'), Nation.find({})])
+          .then((rs) => {
+            let value = rs;
+            if (nationFilter !== '') 
+            value[0] = value[0].filter((player) => {
+              return player.nation.name === nationFilter;
+            })
+            if (positionFilter !== '') 
+            value[0] = value[0].filter((player) => {
+              return player.position === positionFilter;
+            })
             res.render("player", {
               title: "The list of Players",
               maxPage: Math.ceil(value[0].length / 4),
@@ -126,7 +144,7 @@ class playerController {
               isCaptainList: isCaptain,
               message: "",
               checkAdmin: true,
-              nations: value[1],
+              nations: nations,
               positions: positionList,
               user: data.user,
               search,
@@ -140,8 +158,17 @@ class playerController {
               "$regex": `${search}`,
               "$options": "i"
             }
-          }).populate('nation', 'image')
-          .then((player) => {
+          }).populate('nation', 'image name')
+          .then((rs) => {
+            let player = rs
+            if (nationFilter !== '') 
+            player = player.filter((players) => {
+              return players.nation.name === nationFilter;
+            })
+            if (positionFilter !== '') 
+            player = player.filter((players) => {
+              return players.position === positionFilter;
+            })
             res.render("player", {
               title: "The list of Players",
               maxPage: Math.ceil(player.length / 4),
@@ -165,8 +192,17 @@ class playerController {
             "$regex": `${search}`,
             "$options": "i"
           }
-        }).populate('nation', 'image')
-        .then((player) => {
+        }).populate('nation', 'image name')
+        .then((rs) => {
+          let player = rs
+            if (nationFilter !== '') 
+            player = player.filter((players) => {
+              return players.nation.name === nationFilter;
+            })
+            if (positionFilter !== '') 
+            player = player.filter((players) => {
+              return players.position === positionFilter;
+            })
           res.render("player", {
             title: "The list of Players",
             maxPage: Math.ceil(player.length / 4),

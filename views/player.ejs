@@ -32,10 +32,42 @@
                 </div>
                 <% } %>
                 <div class="col-lg-6">
-                    <form class="form-inline my-2 my-lg-0" method="get" action="/players">
-                        <input class="form-control mr-sm-2 mt-5 w-25" name="search" type="text" placeholder="Search"
-                            value="<%= typeof(search) =="undefined" ? '' : search %>" aria-label="Search">
-                        <!-- <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button> -->
+                    <form class="form-inline mt-3" method="get" action="/players">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <input class="form-control mb-3 w-25" name="search" type="text" placeholder="Search"
+                                value="<%= typeof(search) =="undefined" ? '' : search %>" aria-label="Search">
+                            <!-- <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button> -->
+                            <div class="mb-3 d-flex align-items-center">
+                                <label class="label">Nation: </label>
+                                <select name="nationFilter" class="form-select" onchange="this.form.submit()">
+                                    <option value="<%=''%>" <%=JSON.stringify('')===JSON.stringify(locals.nationFilter)? 'selected'
+                                        : '' %>>
+                                        None
+                                    </option>
+                                    <% for(let nation of nations){ %>
+                                    <option value="<%=nation.name%>" <%=JSON.stringify(nation.name)===JSON.stringify(locals.nationFilter)? 'selected'
+                                            : '' %>>
+                                        <%= nation.name%>
+                                    </option>
+                                    <% } %>
+                                </select>
+
+                                <label class="ms-3 label">Position: </label>
+                                <select name="positionFilter" class="form-select" onchange="this.form.submit()">
+                                    <option value="<%=''%>" <%=JSON.stringify('')===JSON.stringify(locals.positionFilter)? 'selected'
+                                        : '' %>>
+                                        None
+                                    </option>
+                                    <% for(let position of positions){ %>
+                                    <option value="<%=position.name%>" <%=JSON.stringify(position.name)===JSON.stringify(locals.positionFilter)? 'selected'
+                                            : '' %>>
+                                        <%= position.name%>
+                                    </option>
+                                    <% } %>
+                                </select>
+                            </div>
+                        </div>
+
                     </form>
                     <table class="table">
                         <tbody>
@@ -117,23 +149,31 @@
                     <form class="form-inline my-2 my-lg-0" method="get" action="/players">
                         <input hidden name="search" value="<%= (typeof(search) == 'undefined') ? '' : search %>">
                         <ul class="pagination me-auto">
-                            <li class="page-item page-pre <%= page == 1 ? 'disabled' : '' %>"><a class="page-link" aria-label="previous page"
-                                    href="/players?page=<%=page - 1%><%= typeof(search) =='undefined' ? '' : '&search='+search %> ">‹</a></li>
+                            <li class="page-item page-pre <%= page == 1 ? 'disabled' : '' %>"><a class="page-link"
+                                    aria-label="previous page" onclick="redirectPage(page)"
+                                    >‹</a>
+                            </li>
                             <li class="page-item"><a class="page-link" aria-label="to page 1"
-                                    href="/players?page=1<%= typeof(search) =='undefined' ? '' : '&search='+search %>">1</a></li>
+                                    onclick="redirectPage(1)">1</a>
+                            </li>
                             <!-- <li class="page-item"> -->
                             <%if (maxPage > 2) {%>
                             <input class="page-item"
                                 style="width: 40px; text-align: center; margin-right: 1px; border: var(--bs-pagination-border-width) solid var(--bs-pagination-border-color)"
-                                type="number" name="page" min="2" placeholder="..." max="<%= parseInt(maxPage)-1%>" value="<%= page != 1 && page != maxPage ? page : '' %>">
+                                type="number" name="page" min="2" placeholder="..." max="<%= parseInt(maxPage)-1%>"
+                                onkeypress="search(this)"
+                                value="<%= page != 1 && page != maxPage ? page : '' %>">
                             <%}%>
                             <input type="submit" hidden />
                             <%if (maxPage > 1) {%>
-                            <li class="page-item"><a class="page-link" aria-label="to page 80"
-                                    href="/players?page=<%=maxPage%><%= typeof(search) =='undefined' ? '' : '&search='+search %>"><%= maxPage %></a></li>
+                            <li class="page-item"><a class="page-link" aria-label="to page 80"  onclick="redirectPage('<%= maxPage %>')"
+                                   ><%= maxPage %></a>
+                            </li>
                             <%}%>
-                            <li class="page-item page-next <%= page == maxPage ? 'disabled' : '' %>"><a class="page-link" aria-label="next page"
-                                    href="/players?page=<%= parseInt(page) + 1%><%= typeof(search) =='undefined' ? '' : '&search='+search %>">›</a></li>
+                            <li class="page-item page-next <%= page == maxPage ? 'disabled' : '' %>"><a
+                                class="page-link" aria-label="next page" onclick="redirectPage(parseInt(page) + 1)"
+                                >›</a>
+                            </li>
                         </ul>
                     </form>
 
@@ -209,6 +249,28 @@
         if (confirm("Do you want delete?")) {
             window.location.href = `/players/delete/${id}`
         }
+    }
+
+    function search(ele) {
+    if(event.key === 'Enter') {
+        redirectPage(ele.value)  
+    }
+}
+
+    function redirectPage(page) {
+        const now = window.location.protocol+ window.location.pathname;
+        const search = window.location.search;
+        let tmp = search.indexOf('page=');
+        let splitQ = search.indexOf('?')  == -1 ? '?' : '';
+        let rs = now;
+        if (tmp === -1) {
+            rs = now + splitQ  + search + "&page=" + page;
+            console.log('a');
+        } else {
+            console.log('b');
+            rs = now + splitQ + search.substring(0,tmp) + "page=" + page;
+        }
+        window.location.href = rs;
     }
 </script>
 
