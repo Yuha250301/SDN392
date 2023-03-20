@@ -67,6 +67,7 @@ class nationController {
         })
         .then((nation) => {
           res.render("nation", {
+            page,
             title: "The list of Nations",
             maxPage: Math.ceil(nation.length / 4),
             nation: nation.splice(4 * (page - 1), 4),
@@ -74,7 +75,7 @@ class nationController {
             message: "",
             authMessage: "",
             user: false,
-            search
+            search,
           });
         })
         .catch(next);
