@@ -10,6 +10,11 @@ playerRouter
   .post(cookieAuthenticated, playerController.create);
 
 playerRouter
+  .route("/search")
+  .post(playerController.search);
+
+
+playerRouter
   .route("/edit/:playerID")
   .get(cookieAuthenticated, playerController.edit)
   .post(cookieAuthenticated, playerController.update);

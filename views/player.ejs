@@ -34,12 +34,14 @@
                 <div class="col-lg-6">
                     <form class="form-inline mt-3" method="get" action="/players">
                         <div class="d-flex justify-content-between align-items-center">
-                            <input class="form-control mb-3 w-25" name="search" type="text" placeholder="Search"
-                                value="<%= typeof(search) =="undefined" ? '' : search %>" aria-label="Search">
+                            <input id="search-input" class="form-control mb-3 w-25" name="search" type="text"
+                                placeholder="Search" value="<%= typeof(search) =="undefined" ? '' : search %>"
+                                aria-label="Search">
                             <!-- <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button> -->
+
                             <div class="mb-3 d-flex align-items-center">
                                 <label class="label">Nation: </label>
-                                <select name="nationFilter" class="form-select" onchange="this.form.submit()">
+                                <select id="nationFilter" name="nationFilter" class="form-select" onchange="this.form.submit()">
                                     <option value="<%=''%>" <%=JSON.stringify('')===JSON.stringify(locals.nationFilter)? 'selected'
                                         : '' %>>
                                         None
@@ -53,7 +55,7 @@
                                 </select>
 
                                 <label class="ms-3 label">Position: </label>
-                                <select name="positionFilter" class="form-select" onchange="this.form.submit()">
+                                <select id="positionFilter" name="positionFilter" class="form-select" onchange="this.form.submit()">
                                     <option value="<%=''%>" <%=JSON.stringify('')===JSON.stringify(locals.positionFilter)? 'selected'
                                         : '' %>>
                                         None
@@ -69,6 +71,7 @@
                         </div>
 
                     </form>
+                    <div id="test">
                     <table class="table">
                         <tbody>
                             <thead>
@@ -150,8 +153,7 @@
                         <input hidden name="search" value="<%= (typeof(search) == 'undefined') ? '' : search %>">
                         <ul class="pagination me-auto">
                             <li class="page-item page-pre <%= page == 1 ? 'disabled' : '' %>"><a class="page-link"
-                                    aria-label="previous page" onclick="redirectPage(page)"
-                                    >‹</a>
+                                    aria-label="previous page" onclick="redirectPage(page)">‹</a>
                             </li>
                             <li class="page-item"><a class="page-link" aria-label="to page 1"
                                     onclick="redirectPage(1)">1</a>
@@ -161,22 +163,21 @@
                             <input class="page-item"
                                 style="width: 40px; text-align: center; margin-right: 1px; border: var(--bs-pagination-border-width) solid var(--bs-pagination-border-color)"
                                 type="number" name="page" min="2" placeholder="..." max="<%= parseInt(maxPage)-1%>"
-                                onkeypress="search(this)"
-                                value="<%= page != 1 && page != maxPage ? page : '' %>">
+                                onkeypress="search(this)" value="<%= page != 1 && page != maxPage ? page : '' %>">
                             <%}%>
                             <input type="submit" hidden />
                             <%if (maxPage > 1) {%>
-                            <li class="page-item"><a class="page-link" aria-label="to page 80"  onclick="redirectPage('<%= maxPage %>')"
-                                   ><%= maxPage %></a>
+                            <li class="page-item"><a class="page-link" aria-label="to page 80"
+                                    onclick="redirectPage('<%= maxPage %>')"><%= maxPage %></a>
                             </li>
                             <%}%>
                             <li class="page-item page-next <%= page == maxPage ? 'disabled' : '' %>"><a
-                                class="page-link" aria-label="next page" onclick="redirectPage(parseInt(page) + 1)"
-                                >›</a>
+                                class="page-link" aria-label="next page"
+                                onclick="redirectPage(parseInt(page) + 1)">›</a>
                             </li>
                         </ul>
                     </form>
-
+                </div>
                 </div>
                 <div class="col-lg-5">
                     <% if(checkAdmin){%>
@@ -252,29 +253,30 @@
     }
 
     function search(ele) {
-    if(event.key === 'Enter') {
-        redirectPage(ele.value)  
+        if (event.key === 'Enter') {
+            redirectPage(ele.value)
+        }
     }
-}
 
     function redirectPage(page) {
-        const now = window.location.protocol+ window.location.pathname;
+        const now = window.location.protocol + window.location.pathname;
         const search = window.location.search;
         let tmp = search.indexOf('page=');
-        let splitQ = search.indexOf('?')  == -1 ? '?' : '';
+        let splitQ = search.indexOf('?') == -1 ? '?' : '';
         let rs = now;
         if (tmp === -1) {
-            rs = now + splitQ  + search + "&page=" + page;
+            rs = now + splitQ + search + "&page=" + page;
             console.log('a');
         } else {
             console.log('b');
-            rs = now + splitQ + search.substring(0,tmp) + "page=" + page;
+            rs = now + splitQ + search.substring(0, tmp) + "page=" + page;
         }
         window.location.href = rs;
     }
 </script>
-
-<script>
+<script src="/js/ejs.min.js"></script>
+<script type="module" src="/js/search.js"></script>
+<scrip>
     function editFunction(playerId) {
         window.location.href = `players/edit/${playerId}`;
     }
@@ -282,6 +284,127 @@
     function deleteFunction(playerId) {
         window.location.href = `players/delete/${playerId}`;
     }
+</scrip>
+
+<script>
+//     // Get a reference to the search input field
+//     const searchInput = document.getElementById('search-input');
+
+//     // Set up an event listener to listen for changes to the search input field
+//     searchInput.addEventListener('input', () => {
+//         // Retrieve the search query from the input field
+//         const query = searchInput.value;
+
+//         // Send an AJAX request to the server with the search query
+//         const xhr = new XMLHttpRequest();
+//         xhr.open('POST', '/players/search');
+//         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+//         xhr.send(`query=${encodeURIComponent(query)}`);
+
+//         // Handle the response from the server
+//         xhr.addEventListener('load', () => {
+//             if (xhr.status === 200) {
+//                 // Parse the JSON response
+//                 const results = JSON.parse(xhr.responseText);
+
+//                 // Update the web page with the search results
+//                 updateSearchResults(results);
+//             } else {
+//                 console.error('Search failed');
+//             }
+//         });
+//     });
+
+//     // Update the web page with the search results
+//     function updateSearchResults(results) {
+//         // Compile the EJS template
+//         const template = ejs.compile(`
+//         <table class="table">
+//                         <tbody>
+//                             <thead>
+//                                 <tr>
+//                                     <th scope="col">Image</th>
+//                                     <th scope="col">Name</th>
+//                                     <th scope="col">Nation</th>
+//                                     <th scope="col">Club</th>
+//                                     <% if(checkAdmin){%>
+//                                     <th scope="col">Actions</th>
+//                                     <% } %>
+//                                 </tr>
+//                             </thead>
+//                             <% player.forEach(function(player){%>
+
+//                             <tr href="/players/details/<%= player._id%>">
+//                                 <th scope="row"><img class="rounded" src=<%=player.image %>>
+//                                 </th>
+//                                 <td>
+//                                     <%= player.name %>
+//                                 </td>
+//                                 <td>
+//                                     <img src="<%= (player.nation) ? (player.nation.image) : '' %>" alt=""
+//                                         class="player-nation">
+//                                 </td>
+//                                 <td>
+//                                     <%= player.club %>
+//                                 </td>
+//                                 <% if(checkAdmin){%>
+//                                 <td>
+//                                     <div class="buttons are-small">
+//                                         <button type="button" class="button is-warning is-light"
+//                                             onclick="editFunction( < %= player.id % > )">Edit</button>
+//                                         <button class="button is-danger is-light" type="button"
+//                                             onclick="deleteFunction( < %= player.id % > )">Delete</button>
+//                                     </div></a>
+//                                 </td>
+//                                 <% } %>
+//                                 <!-- <td>
+//                                                             <div class="buttons">
+//                                                                 <div class="dropdown">
+//                                                                     <button class="btn btn-success" type="button"
+//                                                                         id="dropdownMenuButton1"
+//                                                                         data-bs-toggle="dropdown" aria-expanded="false">
+//                                                                         <svg xmlns="http://www.w3.org/2000/svg"
+//                                                                             width="16" height="16" fill="currentColor"
+//                                                                             class="bi bi-three-dots"
+//                                                                             viewBox="0 0 16 16">
+//                                                                             <path
+//                                                                                 d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+//                                                                         </svg>
+//                                                                     </button>
+//                                                                     <ul class="dropdown-menu"
+//                                                                         aria-labelledby="dropdownMenuButton1">
+//                                                                         <li>
+//                                                                             <a class="btn detail-btn"
+//                                                                                 href="/players/details/<%= player._id%>">Details</a>
+//                                                                         </li>
+//                                                                         <% if(checkAdmin){%>
+//                                                                             <li>
+//                                                                                 <a class="btn edit-btn"
+//                                                                                     href="/players/edit/<%= player._id%>">Edit</a>
+//                                                                             </li>
+//                                                                             <li>
+//                                                                                 <a class="btn delete-btn"
+//                                                                                     onclick="deleteFunction('<%=player._id%>')">Delete
+//                                                                                 </a>
+//                                                                             </li>
+//                                                                             <% } %>
+//                                                                     </ul>
+//                                                                 </div>
+//                                                             </div> -->
+//                                 <!-- </td> -->
+//                             </tr>
+//                             <%})%>
+//                         </tbody>
+//                     </table>
+//   `);
+
+//         // Generate the HTML for the search results using the template
+//         const html = template({
+//             results
+//         });
+
+//         document.getElementById("test").innerHTML = html;
+//     }
 </script>
 
 </html>
