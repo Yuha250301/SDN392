@@ -53,7 +53,8 @@ class nationController {
               message: "",
               authMessage: "",
               user: data.user,
-              search
+              search,
+              page
             });
           })
           .catch(next);
