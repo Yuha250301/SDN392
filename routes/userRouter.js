@@ -52,7 +52,10 @@ userRouter
   .route("/account/edit")
   .get(cookieAuthenticated, userController.editAccount)
   .post(cookieAuthenticated, userController.updateAccount);
-
+userRouter
+  .route("/account/updatePassword")
+  .get(cookieAuthenticated, userController.changePassword)
+  .post(cookieAuthenticated, userController.updatePassword);
 userRouter
   .route("/account/listUser")
   .get(cookieAuthenticated, userController.listUser);

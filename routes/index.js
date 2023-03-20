@@ -10,8 +10,17 @@ router.get("/", function (req, res, next) {
   var token = req.cookies.accessToken;
   if (token) {
     var data = jwt.verify(req.cookies.accessToken, config.secretKey);
-    res.render("index", { title: "My application", user: data.user });
-  } else res.render("index", { title: "My application", user: false });
+    res.render("index", {
+      title: "My application",
+      user: data.user,
+      checkAdmin: data.user.isAdmin,
+    });
+  } else
+    res.render("index", {
+      title: "My application",
+      user: false,
+      checkAdmin: false,
+    });
 });
 
 module.exports = router;
